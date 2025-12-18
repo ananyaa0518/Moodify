@@ -1,35 +1,28 @@
-/**
- * GET /api/resources/fetch
- * Fetches resources matched to user's mood/emotion
- */
+import { NextResponse } from "next/server";
+import dbConnect from "@/lib/dbconnect";
+import Resource from "@/models/Resource";
+import { matchResourcesToMood } from "@/lib/utils/sentimentMatcher";
 
 export async function GET(request) {
   try {
+    await dbConnect();
+    
     const { searchParams } = new URL(request.url);
-    const mood = searchParams.get("mood");
-    const category = searchParams.get("category");
+    const sentimentScore = parseFloat(searchParams.get('sentiment')) || 0;
+    const tags = searchParams.get('tags')?.split(',') || [];
 
-    if (!mood) {
-      return Response.json(
-        { error: "Mood parameter is required" },
-        { status: 400 }
-      );
+    let query = { isActive: true };
+    
+    if (tags.length > 0) {
+      query.tags = { $in: tags };
     }
 
-    // TODO: Implement resource matching logic
-    // - Query Resource collection by mood
-    // - Filter by category if provided
-    // - Sort by rating/helpful votes
-    // - Return matched resources
+    const allResources = await Resource.find(query);
+    const matchedResources = matchResourcesToMood(sentimentScore, allResources);
 
-    return Response.json({
-      success: true,
-      data: [],
-      message: "Resources fetched successfully",
-    });
+    return NextResponse.json(matchedResources.slice(0, 10), { status: 200 });
   } catch (error) {
-    console.error("Error fetching resources:", error);
-    return Response.json(
+    return NextResponse.json(
       { error: "Failed to fetch resources" },
       { status: 500 }
     );

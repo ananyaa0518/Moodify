@@ -1,38 +1,24 @@
-/**
- * POST /api/resources/vote
- * Upvotes/marks resources as helpful
- */
+import { NextResponse } from "next/server";
+import dbConnect from "@/lib/dbconnect";
+import Resource from "@/models/Resource";
 
 export async function POST(request) {
   try {
-    const body = await request.json();
-    const { resourceId, userId, voteType } = body;
+    await dbConnect();
+    
+    const { resourceId } = await request.json();
 
-    if (!resourceId || !userId || !voteType) {
-      return Response.json(
-        { error: "resourceId, userId, and voteType are required" },
-        { status: 400 }
-      );
-    }
+    const resource = await Resource.findByIdAndUpdate(
+      resourceId,
+      { $inc: { upvotes: 1 } },
+      { new: true }
+    );
 
-    if (!["up", "down"].includes(voteType)) {
-      return Response.json(
-        { error: 'voteType must be "up" or "down"' },
-        { status: 400 }
-      );
-    }
-
-    // TODO: Implement voting logic
-    // - Update resource helpful count
-    // - Track user votes to prevent duplicates
-    // - Update resource rating
-
-    return Response.json({
-      success: true,
-      message: "Vote recorded successfully",
-    });
+    return NextResponse.json(resource, { status: 200 });
   } catch (error) {
-    console.error("Error recording vote:", error);
-    return Response.json({ error: "Failed to record vote" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to upvote resource" },
+      { status: 500 }
+    );
   }
 }

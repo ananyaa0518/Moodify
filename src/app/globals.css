@@ -1,1 +1,87 @@
 @import "tailwindcss";
+
+:root {
+  --color-primary: #6b9080;
+  --color-primary-soft: #a4c3b2;
+  --color-background: #f6fff8;
+  --color-background-soft: #eaf4f4;
+  --color-accent: #ffe5d9;
+  --color-text: #2f3e46;
+  --color-muted: #6c7a80;
+  --color-border: #d3e0dd;
+  --color-negative-soft: #b8b8d1;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  color: var(--color-text);
+  background: radial-gradient(circle at top left, #fefee3 0, #f6fff8 45%, #eaf4f4 100%);
+}
+
+.bg-background {
+  background-color: var(--color-background);
+}
+
+.bg-background-soft {
+  background-color: var(--color-background-soft);
+}
+
+.bg-surface {
+  background: linear-gradient(
+    135deg,
+    rgba(246, 255, 248, 0.96),
+    rgba(234, 244, 244, 0.98)
+  );
+}
+
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.bg-primary-soft {
+  background-color: var(--color-primary-soft);
+}
+
+.text-text {
+  color: var(--color-text);
+}
+
+.text-text-on-primary {
+  color: #fefee3;
+}
+
+.text-muted {
+  color: var(--color-muted);
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-primary-strong {
+  color: #4f7462;
+}
+
+.border-border {
+  border-color: var(--color-border);
+}
+
+.bg-chip {
+  background-color: rgba(164, 195, 178, 0.18);
+}
+
+.text-negative-soft {
+  color: var(--color-negative-soft);
+}
+
+.shadow-soft {
+  box-shadow: 0 18px 45px rgba(25, 52, 43, 0.08);
+}
+
+.shadow-soft-sm {
+  box-shadow: 0 10px 25px rgba(25, 52, 43, 0.06);
+}
+
+.shadow-soft-lg {
+  box-shadow: 0 26px 60px rgba(25, 52, 43, 0.12);
+}

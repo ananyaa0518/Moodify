@@ -1,32 +1,60 @@
-/**
- * GET /api/emergency/hotlines
- * Fetches crisis hotlines and emergency resources
- */
+import { NextResponse } from "next/server";
+import dbConnect from "@/lib/dbconnect";
+import EmergencyHotline from "@/models/EmergencyHotline";
 
 export async function GET(request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const country = searchParams.get("country") || "US";
-    const crisis_type = searchParams.get("crisis_type"); // suicide, mental-health, substance-abuse, etc.
+    await dbConnect();
 
-    // TODO: Implement emergency hotline fetching
-    // - Query EmergencyHotline collection
-    // - Filter by country and crisis type if provided
-    // - Return hotline numbers, websites, chat options
-    // - Include multilingual support if available
+    const hotlines = await EmergencyHotline.find({ isVerified: true });
 
-    return Response.json({
-      success: true,
-      data: [
-        // TODO: Replace with actual database data
-      ],
-      message: "Emergency hotlines fetched successfully",
-    });
+    return NextResponse.json(hotlines, { status: 200 });
   } catch (error) {
-    console.error("Error fetching emergency hotlines:", error);
-    return Response.json(
-      { error: "Failed to fetch emergency hotlines" },
+    return NextResponse.json(
+      { error: "Failed to fetch hotlines" },
       { status: 500 }
     );
+  }
+}
+
+// Seed initial data
+export async function POST() {
+  try {
+    await dbConnect();
+
+    const seedData = [
+      {
+        name: "National Suicide Prevention Lifeline",
+        phone: "988",
+        country: "USA",
+        description: "24/7 crisis support",
+        availableHours: "24/7",
+        website: "https://988lifeline.org",
+        tags: ["suicide", "crisis"],
+        isVerified: true,
+        lastVerified: new Date(),
+      },
+      {
+        name: "Crisis Text Line",
+        phone: "Text HOME to 741741",
+        country: "USA",
+        description: "Text-based crisis support",
+        availableHours: "24/7",
+        tags: ["crisis", "text"],
+        isVerified: true,
+      },
+    ];
+
+    for (const hotline of seedData) {
+      await EmergencyHotline.findOneAndUpdate(
+        { phone: hotline.phone },
+        hotline,
+        { upsert: true }
+      );
+    }
+
+    return NextResponse.json({ message: "Hotlines seeded" }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: "Seed failed" }, { status: 500 });
   }
 }

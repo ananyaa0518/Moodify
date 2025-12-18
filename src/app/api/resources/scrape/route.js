@@ -1,35 +1,35 @@
-/**
- * POST /api/resources/scrape
- * Scrapes and indexes new resources (articles, videos, podcasts)
- */
+import { NextResponse } from "next/server";
+import dbConnect from "@/lib/dbconnect";
+import Resource from "@/models/Resource";
+import { scrapeArticles } from "@/lib/scrapers/articleScraper";
+import { scrapeVideos } from "@/lib/scrapers/videoScraper";
 
 export async function POST(request) {
   try {
-    const body = await request.json();
-    const { sourceUrl, contentType, moodTags } = body;
+    await dbConnect();
 
-    if (!sourceUrl || !contentType) {
-      return Response.json(
-        { error: "sourceUrl and contentType are required" },
-        { status: 400 }
+    const articles = await scrapeArticles();
+    const videos = await scrapeVideos();
+    
+    const allResources = [...articles, ...videos];
+
+    // Upsert resources (update if exists, insert if new)
+    for (const resource of allResources) {
+      await Resource.findOneAndUpdate(
+        { url: resource.url },
+        { ...resource, scrapedAt: new Date() },
+        { upsert: true, new: true }
       );
     }
 
-    // TODO: Implement scraping logic
-    // - Use appropriate scraper based on contentType (article, video, podcast)
-    // - Extract content, metadata, and sentiment
-    // - Tag with mood categories
-    // - Save to Resource collection
-    // - Return created resource
-
-    return Response.json({
-      success: true,
-      message: "Resource scraped and indexed successfully",
-    });
+    return NextResponse.json(
+      { message: `Scraped ${allResources.length} resources` },
+      { status: 200 }
+    );
   } catch (error) {
-    console.error("Error scraping resource:", error);
-    return Response.json(
-      { error: "Failed to scrape resource" },
+    console.error("Scraping error:", error);
+    return NextResponse.json(
+      { error: "Failed to scrape resources" },
       { status: 500 }
     );
   }

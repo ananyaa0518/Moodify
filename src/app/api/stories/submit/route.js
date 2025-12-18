@@ -1,33 +1,43 @@
-/**
- * POST /api/stories/submit
- * Submits a peer story
- */
+import { NextResponse } from "next/server";
+import vader from "vader-sentiment";
+import dbConnect from "@/lib/dbconnect";
+import PeerStory from "@/models/PeerStory";
+import { suggestTagsFromText } from "@/lib/utils/sentimentMatcher";
 
 export async function POST(request) {
   try {
-    const body = await request.json();
-    const { title, content, moodTags, isAnonymous } = body;
+    await dbConnect();
 
-    if (!title || !content) {
-      return Response.json(
-        { error: "title and content are required" },
+    const { title, story, tags } = await request.json();
+
+    if (!title || !story) {
+      return NextResponse.json(
+        { error: "Title and story are required" },
         { status: 400 }
       );
     }
 
-    // TODO: Implement story submission logic
-    // - Create new PeerStory document
-    // - Store mood tags
-    // - Handle anonymity settings
-    // - Validate content for harmful material
-    // - Save to database
+    const scores = vader.SentimentIntensityAnalyzer.polarity_scores(story);
+    const suggestedTags = suggestTagsFromText(story);
 
-    return Response.json({
-      success: true,
-      message: "Story submitted successfully",
+    const newStory = new PeerStory({
+      title,
+      story,
+      tags: tags || suggestedTags,
+      sentimentScore: scores.compound,
+      isModerated: scores.compound > -0.5, // Auto-approve non-negative stories
     });
+
+    await newStory.save();
+
+    return NextResponse.json(
+      { message: "Story submitted successfully!" },
+      { status: 201 }
+    );
   } catch (error) {
-    console.error("Error submitting story:", error);
-    return Response.json({ error: "Failed to submit story" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to submit story" },
+      { status: 500 }
+    );
   }
 }

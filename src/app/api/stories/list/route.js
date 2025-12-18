@@ -1,34 +1,29 @@
-/**
- * GET /api/stories/list
- * Fetches peer stories (anonymized)
- */
+import { NextResponse } from "next/server";
+import dbConnect from "@/lib/dbconnect";
+import PeerStory from "@/models/PeerStory";
 
 export async function GET(request) {
   try {
+    await dbConnect();
+
     const { searchParams } = new URL(request.url);
-    const mood = searchParams.get("mood");
-    const limit = parseInt(searchParams.get("limit")) || 10;
-    const page = parseInt(searchParams.get("page")) || 1;
+    const tags = searchParams.get("tags")?.split(",") || [];
 
-    // TODO: Implement story listing logic
-    // - Query PeerStory collection
-    // - Filter by mood if provided
-    // - Anonymize sensitive data
-    // - Sort by helpfulness/recency
-    // - Implement pagination
+    let query = { isModerated: true };
 
-    return Response.json({
-      success: true,
-      data: [],
-      pagination: {
-        page,
-        limit,
-        total: 0,
-      },
-      message: "Stories fetched successfully",
-    });
+    if (tags.length > 0) {
+      query.tags = { $in: tags };
+    }
+
+    const stories = await PeerStory.find(query)
+      .sort({ helpfulCount: -1, createdAt: -1 })
+      .limit(20);
+
+    return NextResponse.json(stories, { status: 200 });
   } catch (error) {
-    console.error("Error fetching stories:", error);
-    return Response.json({ error: "Failed to fetch stories" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch stories" },
+      { status: 500 }
+    );
   }
 }
