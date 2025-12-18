@@ -1,128 +1,132 @@
-# Mental Health Resource Aggregator
+# Moodify 🎭
 
-A privacy-first web application that helps people discover relevant mental health resources, peer experiences, and crisis support based on how they’re feeling — without requiring accounts, social graphs, or diagnoses.
+A playful neo-brutalist mood tracker and podcast scrapbook that helps you notice, name, and nurture your feelings.
 
-This project focuses on **support and guidance**, not clinical assessment.
+## Summary
 
----
+Moodify combines journaling with sentiment analysis to provide personalized mental health resources. Users can track their emotional journey, discover curated content, and explore community-shared podcast recommendations—all in a vibrant, accessible interface.
 
-## ✨ Why This Exists
+## Features
 
-When people feel overwhelmed, they usually don’t know:
+- 📝 **Mood Journaling** - Write daily entries with automatic sentiment analysis
+- 📊 **Emotional Dashboard** - Visualize mood trends over time with interactive charts
+- 🎯 **Smart Resource Matching** - Get articles, videos, and podcasts based on your current mood
+- 🎙️ **Community Podcast Scrapbook** - Explore mental health podcasts curated by the community
+- 🆘 **Crisis Resources** - Quick access to verified emergency hotlines and support services
+- 💬 **Peer Stories** - Read and share anonymous mental health experiences
 
-- what to search for,
-- which resources are trustworthy,
-- or where to start.
+## Tech Stack
 
-Most platforms either:
+**Frontend:**
 
-- overwhelm users with generic content, or
-- require sign-ups and personal data before offering help.
+- Next.js 14 (App Router), React with Hooks, TailwindCSS (Neo-brutalist design), Chart.js for data visualization
 
-This app removes that friction by:
+**Backend:**
 
-- accepting short, natural language check-ins,
-- matching them with curated resources,
-- surfacing peer stories for reassurance,
-- and keeping emergency help accessible at all times.
+- Next.js API Routes, MongoDB with Mongoose, VADER Sentiment Analysis
 
----
+**Scraping & Data:**
 
-## 🧠 Core Features
+- Cheerio for web scraping, Axios for HTTP requests, RSS feed parsing for podcasts
 
-### 1. Quick Sentiment Check-In
+## Getting Started
 
-- Users write 1–3 sentences about how they’re feeling.
-- Text is analyzed to understand **emotional intensity and themes**.
-- No labels are forced on the user.
-- No authentication required.
+### Prerequisites
 
-> The check-in is used only to improve recommendations — not stored by default.
+- Node.js 18+ and npm
+- MongoDB database (local or Atlas)
 
----
+### Installation
 
-### 2. Smart Resource Matching
+1. **Clone the repository**
 
-- Articles, videos, and podcasts are matched using:
-  - sentiment range (positive / neutral / negative),
-  - extracted keywords (stress, anxiety, burnout, etc.),
-  - community upvotes.
-- Resources are ranked by **relevance + usefulness**, not popularity alone.
+```bash
+   git clone https://github.com/your-username/moodify.git
+   cd moodify
+```
 
-Content is refreshed regularly via automated scraping and curation.
+2. **Install dependencies**
 
----
+```bash
+   npm install
+```
 
-### 3. Anonymous Peer Stories
+3. **Set up environment variables**
 
-- People can share experiences anonymously.
-- Stories are tagged by topic (e.g., stress, recovery, relationships).
-- Readers can mark stories as **helpful** or **relatable**.
-- No comments, DMs, or social profiles — by design.
+```bash
+   # Create .env.local file
+   MONGODB_URI=mongodb://localhost:27017/moodify
+   # or use MongoDB Atlas connection string
+```
 
-This keeps the space supportive without becoming a social network.
+4. **Run the development server**
 
----
+```bash
+   npm run dev
+```
 
-### 4. Emergency & Crisis Support
+5. **Populate initial data** (one-time setup)
 
-- Crisis hotlines are always accessible.
-- One-click calling or texting where available.
-- Resources are region-aware and regularly verified.
-- No login required — ever.
+```bash
+   # Visit http://localhost:3000 and add this button temporarily to page.js:
+   # <button onClick={() => fetch('/api/resources/scrape', {method: 'POST'})}>
+   #   Scrape Resources
+   # </button>
+```
 
-Emergency support is intentionally visible across the app.
+6. **Open your browser**
 
----
+```
+   http://localhost:3000
+```
 
-### 5. Optional History
+## Project Structure
 
-- Without login: recent interactions stored locally.
-- With login (optional future): insights can be saved securely.
-- Users can reflect on what helped them in the past.
-
----
-
-## 🛠️ Tech Stack
-
-**Frontend**
-
-- Next.js (App Router)
-- React Client Components
-- Tailwind CSS
-
-**Backend**
-
-- Next.js API Routes
-- MongoDB + Mongoose
-- Sentiment analysis (VADER)
-
-**Data & Automation**
-
-- Web scraping (Cheerio, Axios)
-- Curated video and podcast sources
-- Scheduled refresh via cron (external / platform-native)
-
----
-
-## 📁 Project Structure
-
-```text
+```
 src/
 ├── app/
-│   ├── api/
-│   │   ├── journal/
-│   │   ├── resources/
-│   │   ├── stories/
-│   │   └── emergency/
-│   ├── components/
-│   │   ├── resourceMatcher/
-│   │   ├── peerStories/
-│   │   ├── emergencyResources/
-│   │   └── quickCheckIn/
-│   └── page.js
+│   ├── api/              # API routes (journal, resources, stories, emergency)
+│   ├── components/       # React components (forms, dashboards, panels)
+│   ├── globals.css       # Tailwind + Neo-brutalist styles
+│   └── page.js           # Home page
 ├── lib/
-│   ├── scrapers/
-│   └── utils/
-└── models/
+│   ├── scrapers/         # Web scraping (articles, podcasts, videos)
+│   ├── utils/            # Helpers (sentiment matching, tagging)
+│   └── dbconnect.js      # MongoDB connection
+└── models/               # Mongoose schemas (JournalEntry, Resource, etc.)
 ```
+
+## Usage
+
+1. **Journal** - Write entries, get automatic mood analysis
+2. **Dashboard** - View emotional trends over time
+3. **Resources** - Discover mood-matched content (articles, videos, podcasts)
+4. **Community** - Browse podcast scrapbook and peer stories
+5. **Crisis Support** - Access emergency hotlines anytime
+
+## Future Enhancements
+
+- [ ] User authentication and personalized profiles
+- [ ] Scheduled scraping with cron jobs for fresh content
+- [ ] Therapist/counselor directory integration
+- [ ] Mobile app (React Native)
+- [ ] Social features (follow friends, share entries)
+- [ ] AI chatbot for immediate emotional support
+- [ ] Dark mode toggle
+- [ ] Multi-language support
+
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---

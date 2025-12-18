@@ -12,7 +12,7 @@ export async function POST(request) {
     const articles = await scrapeArticles();
     const videos = await scrapeVideos();
     const podcasts = await scrapePodcasts();
-    
+
     const allResources = [...articles, ...videos, ...podcasts];
 
     // Upsert resources (update if exists, insert if new)
@@ -25,7 +25,14 @@ export async function POST(request) {
     }
 
     return NextResponse.json(
-      { message: `Scraped ${allResources.length} resources`, breakdown: { articles: articles.length, videos: videos.length, podcasts: podcasts.length } },
+      {
+        message: `Scraped ${allResources.length} resources`,
+        breakdown: {
+          articles: articles.length,
+          videos: videos.length,
+          podcasts: podcasts.length,
+        },
+      },
       { status: 200 }
     );
   } catch (error) {

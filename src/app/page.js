@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import JournalForm from "@/app/components/journalForm/journalForm.jsx";
 import SentimentDashboard from "@/app/components/sentimentDashboard/sentimentDashboard.jsx";
 import ResourceMatcher from "@/app/components/resourceMatcher/resourceMatcher.jsx";
+import ScrapingPanel from "@/app/components/admin/ScrapingPanel.jsx";
 
 export default function Home() {
   const [entries, setEntries] = useState([]);
@@ -78,6 +79,13 @@ export default function Home() {
   return (
     <main className="px-4 pb-10 pt-6 sm:pt-8">
       <div className="mx-auto max-w-6xl space-y-10">
+        {/* TEMPORARY: Admin scraping panel – remove or move to a dedicated admin route in production */}
+        <section className="neo-card bg-neo-yellow/80 px-4 py-4 border-[3px] border-neutral-900">
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-700">
+            Admin only · data scraping
+          </p>
+          <ScrapingPanel onScraped={fetchScraps} />
+        </section>
         {/* HERO / INTRO */}
         <section
           id="about"

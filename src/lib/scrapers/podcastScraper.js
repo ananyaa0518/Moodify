@@ -51,7 +51,10 @@ export class PodcastScraper {
       const channel = $("channel");
       const title = channel.find("title").first().text() || "Unknown Podcast";
       const description = channel.find("description").first().text() || "";
-      const author = channel.find("author").first().text() || channel.find("managingEditor").first().text() || "";
+      const author =
+        channel.find("author").first().text() ||
+        channel.find("managingEditor").first().text() ||
+        "";
       const imageUrl = channel.find("image > url").first().text() || "";
       const link = channel.find("link").first().text() || feedUrl;
 
@@ -63,11 +66,13 @@ export class PodcastScraper {
         if (index >= 10) return; // Limit to first 10 episodes
 
         const episodeTitle = $(element).find("title").first().text() || "";
-        const episodeDescription = $(element).find("description").first().text() || "";
+        const episodeDescription =
+          $(element).find("description").first().text() || "";
         const pubDate = $(element).find("pubDate").first().text() || "";
         const enclosureUrl = $(element).find("enclosure").attr("url") || "";
         const duration = $(element).find("duration").first().text() || "";
-        const episodeNumber = $(element).find("episodeNumber").first().text() || null;
+        const episodeNumber =
+          $(element).find("episodeNumber").first().text() || null;
         const season = $(element).find("season").first().text() || null;
 
         if (episodeTitle || enclosureUrl) {
@@ -194,7 +199,11 @@ export async function scrapePodcasts() {
     try {
       const podcastData = await PodcastScraper.scrapePodcast(feedUrl);
 
-      if (podcastData && podcastData.episodes && podcastData.episodes.length > 0) {
+      if (
+        podcastData &&
+        podcastData.episodes &&
+        podcastData.episodes.length > 0
+      ) {
         // Create a resource for the podcast series
         resources.push({
           title: podcastData.title,

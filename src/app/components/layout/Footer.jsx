@@ -12,14 +12,14 @@ export default function Footer() {
             © 2025 Moodify · Made by Ananyaa
           </p>
           <p className="max-w-md text-[11px] text-neutral-700">
-            A playful little corner of the internet to notice, name, and
-            nurture your mood.
+            A playful little corner of the internet to notice, name, and nurture
+            your mood.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <a
-            href="https://github.com/your-github-handle"
+            href="https://github.com/ananyaa0518"
             target="_blank"
             rel="noreferrer"
             className="inline-flex h-9 w-9 items-center justify-center rounded-xl border-[3px] border-neutral-900 bg-neo-mint text-neutral-900 shadow-neo hover:-translate-y-[2px] hover:shadow-neo-strong transition"
@@ -28,7 +28,7 @@ export default function Footer() {
             <FaGithub />
           </a>
           <a
-            href="https://www.linkedin.com/in/your-linkedin-handle"
+            href="https://www.linkedin.com/in/ananyaa1805/"
             target="_blank"
             rel="noreferrer"
             className="inline-flex h-9 w-9 items-center justify-center rounded-xl border-[3px] border-neutral-900 bg-neo-pink text-neutral-900 shadow-neo hover:-translate-y-[2px] hover:shadow-neo-strong transition"
@@ -41,4 +41,3 @@ export default function Footer() {
     </footer>
   );
 }
-

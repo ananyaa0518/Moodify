@@ -1,12 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-
-/**
- * EmergencyPanel Component
- * Displays crisis hotlines and emergency mental health resources
- */
-
 export default function EmergencyPanel() {
   const [hotlines, setHotlines] = useState([]);
   const [loading, setLoading] = useState(false);
