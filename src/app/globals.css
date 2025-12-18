@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  /* Soft base palette (kept for existing components) */
   --color-primary: #6b9080;
   --color-primary-soft: #a4c3b2;
   --color-background: #f6fff8;
@@ -10,12 +11,21 @@
   --color-muted: #6c7a80;
   --color-border: #d3e0dd;
   --color-negative-soft: #b8b8d1;
+
+  /* Neo-brutalism palette */
+  --neo-yellow: #ffe76a;
+  --neo-pink: #ff8bd5;
+  --neo-mint: #b6ffce;
+  --neo-lilac: #c3b5ff;
+  --neo-cream: #fff6e9;
+  --neo-bg: #f9f0ff;
 }
 
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
   color: var(--color-text);
-  background: radial-gradient(circle at top left, #fefee3 0, #f6fff8 45%, #eaf4f4 100%);
+  background:
+    radial-gradient(circle at top left, #fff4d9 0, #ffe7f9 35%, #f9f0ff 70%, #e8fffb 100%);
 }
 
 .bg-background {
@@ -84,4 +94,58 @@ body {
 
 .shadow-soft-lg {
   box-shadow: 0 26px 60px rgba(25, 52, 43, 0.12);
+}
+
+/* Neo-brutalism helpers */
+.bg-neo-yellow {
+  background-color: var(--neo-yellow);
+}
+
+.bg-neo-pink {
+  background-color: var(--neo-pink);
+}
+
+.bg-neo-mint {
+  background-color: var(--neo-mint);
+}
+
+.bg-neo-lilac {
+  background-color: var(--neo-lilac);
+}
+
+.bg-neo-cream {
+  background-color: var(--neo-cream);
+}
+
+.bg-neo-page {
+  background-color: var(--neo-bg);
+}
+
+.text-neo-cream {
+  color: var(--neo-cream);
+}
+
+.shadow-neo {
+  box-shadow: 0 6px 0 rgba(15, 23, 42, 0.95);
+}
+
+.shadow-neo-strong {
+  box-shadow: 0 8px 0 rgba(15, 23, 42, 1);
+}
+
+.shadow-neo-inner {
+  box-shadow: inset 0 0 0 3px rgba(15, 23, 42, 0.9);
+}
+
+.neo-card {
+  border-radius: 1.25rem;
+  border: 4px solid #111827;
+  box-shadow: 0 8px 0 #111827;
+  background-color: var(--neo-cream);
+}
+
+.neo-pill {
+  border-radius: 999px;
+  border: 3px solid #111827;
+  box-shadow: 0 5px 0 #111827;
 }

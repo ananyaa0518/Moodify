@@ -16,16 +16,22 @@ export default function Home() {
     try {
       const res = await fetch("/api/journal/entries");
       const data = await res.json();
-      setEntries(data);
 
-      if (Array.isArray(data) && data.length > 0) {
-        const last = data[data.length - 1];
+      // Ensure data is an array
+      const entriesData = Array.isArray(data)
+        ? data
+        : data.entries || data.data || [];
+      setEntries(entriesData);
+
+      if (Array.isArray(entriesData) && entriesData.length > 0) {
+        const last = entriesData[entriesData.length - 1];
         setLatestSentiment(last.sentimentScore ?? null);
       } else {
         setLatestSentiment(null);
       }
     } catch (error) {
       console.error("Failed to fetch entries:", error);
+      setEntries([]);
     } finally {
       setLoading(false);
     }

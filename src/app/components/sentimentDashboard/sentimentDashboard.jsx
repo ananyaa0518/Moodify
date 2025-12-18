@@ -24,8 +24,11 @@ ChartJS.register(
 );
 
 export default function SentimentDashboard({ entries }) {
-  const scores = entries.map((entry) => entry.sentimentScore);
-  const labels = entries.map((entry) =>
+  // Ensure entries is always an array
+  const entriesArray = Array.isArray(entries) ? entries : [];
+
+  const scores = entriesArray.map((entry) => entry.sentimentScore);
+  const labels = entriesArray.map((entry) =>
     entry.date && !isNaN(new Date(entry.date))
       ? new Date(entry.date).toLocaleDateString()
       : "No date"
@@ -132,7 +135,7 @@ export default function SentimentDashboard({ entries }) {
       </div>
 
       <div className="h-64">
-        {entries.length > 0 ? (
+        {entriesArray.length > 0 ? (
           <Line data={data} options={options} />
         ) : (
           <div className="h-full flex items-center justify-center text-sm text-muted">
