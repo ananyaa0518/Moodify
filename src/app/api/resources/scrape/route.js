@@ -3,6 +3,7 @@ import dbConnect from "@/lib/dbconnect";
 import Resource from "@/models/Resource";
 import { scrapeArticles } from "@/lib/scrapers/articleScraper";
 import { scrapeVideos } from "@/lib/scrapers/videoScraper";
+import { scrapePodcasts } from "@/lib/scrapers/podcastScraper";
 
 export async function POST(request) {
   try {
@@ -10,8 +11,9 @@ export async function POST(request) {
 
     const articles = await scrapeArticles();
     const videos = await scrapeVideos();
+    const podcasts = await scrapePodcasts();
     
-    const allResources = [...articles, ...videos];
+    const allResources = [...articles, ...videos, ...podcasts];
 
     // Upsert resources (update if exists, insert if new)
     for (const resource of allResources) {
@@ -23,7 +25,7 @@ export async function POST(request) {
     }
 
     return NextResponse.json(
-      { message: `Scraped ${allResources.length} resources` },
+      { message: `Scraped ${allResources.length} resources`, breakdown: { articles: articles.length, videos: videos.length, podcasts: podcasts.length } },
       { status: 200 }
     );
   } catch (error) {

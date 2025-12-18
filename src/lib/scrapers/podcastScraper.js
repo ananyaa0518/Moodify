@@ -3,6 +3,8 @@
  * Extracts metadata and information from podcast URLs and RSS feeds
  */
 
+import { load } from "cheerio";
+
 export class PodcastScraper {
   /**
    * Scrape podcast episode from URL
@@ -38,17 +40,57 @@ export class PodcastScraper {
   static async scrapeRSSFeed(feedUrl) {
     try {
       const response = await fetch(feedUrl);
-      const xml = await response.text();
+      if (!response.ok) {
+        throw new Error(`Failed to fetch RSS feed: ${response.statusText}`);
+      }
 
-      // TODO: Parse XML using libraries like fast-xml-parser
-      // Extract episodes and podcast metadata
+      const xml = await response.text();
+      const $ = load(xml, { xmlMode: true });
+
+      // Extract podcast metadata
+      const channel = $("channel");
+      const title = channel.find("title").first().text() || "Unknown Podcast";
+      const description = channel.find("description").first().text() || "";
+      const author = channel.find("author").first().text() || channel.find("managingEditor").first().text() || "";
+      const imageUrl = channel.find("image > url").first().text() || "";
+      const link = channel.find("link").first().text() || feedUrl;
+
+      // Extract episodes
+      const episodes = [];
+      const items = channel.find("item");
+
+      items.each((index, element) => {
+        if (index >= 10) return; // Limit to first 10 episodes
+
+        const episodeTitle = $(element).find("title").first().text() || "";
+        const episodeDescription = $(element).find("description").first().text() || "";
+        const pubDate = $(element).find("pubDate").first().text() || "";
+        const enclosureUrl = $(element).find("enclosure").attr("url") || "";
+        const duration = $(element).find("duration").first().text() || "";
+        const episodeNumber = $(element).find("episodeNumber").first().text() || null;
+        const season = $(element).find("season").first().text() || null;
+
+        if (episodeTitle || enclosureUrl) {
+          episodes.push({
+            title: episodeTitle,
+            description: episodeDescription,
+            duration: this.parseDuration(duration),
+            publishDate: pubDate ? new Date(pubDate) : new Date(),
+            audioUrl: enclosureUrl,
+            episodeNumber: episodeNumber ? parseInt(episodeNumber) : null,
+            season: season ? parseInt(season) : null,
+          });
+        }
+      });
 
       return {
-        title: "",
-        description: "",
-        author: "",
-        episodes: [],
-        feedUrl: feedUrl,
+        title,
+        description,
+        author,
+        episodes,
+        feedUrl,
+        imageUrl,
+        link,
         contentType: "podcast",
       };
     } catch (error) {
@@ -131,4 +173,62 @@ export class PodcastScraper {
     }
     return `${minutes}m ${secs}s`;
   }
+}
+
+/**
+ * Scrape popular podcasts from multiple RSS feeds
+ * @returns {Promise<Array>} Array of scraped podcast resources
+ */
+export async function scrapePodcasts() {
+  const podcastFeeds = [
+    "https://feeds.acast.com/public/shows/ted-talks-daily",
+    "https://feeds.megaphone.fm/GLT4015192152",
+    "https://feeds.gimlet.com/wondery",
+    "https://www.allinpodcast.com/feed",
+    "https://feeds.acast.com/public/shows/this-american-life",
+  ];
+
+  const resources = [];
+
+  for (const feedUrl of podcastFeeds) {
+    try {
+      const podcastData = await PodcastScraper.scrapePodcast(feedUrl);
+
+      if (podcastData && podcastData.episodes && podcastData.episodes.length > 0) {
+        // Create a resource for the podcast series
+        resources.push({
+          title: podcastData.title,
+          description: podcastData.description,
+          url: podcastData.feedUrl,
+          type: "podcast",
+          platform: "rss-feed",
+          author: podcastData.author,
+          imageUrl: podcastData.imageUrl,
+          contentType: "podcast",
+          isActive: true,
+          upvotes: 0,
+          downvotes: 0,
+          tags: ["mental-health", "podcast", "resources"],
+        });
+
+        // Optionally add individual episodes as resources
+        // podcastData.episodes.slice(0, 3).forEach((episode) => {
+        //   resources.push({
+        //     title: `${podcastData.title} - ${episode.title}`,
+        //     description: episode.description,
+        //     url: episode.audioUrl || podcastData.feedUrl,
+        //     type: "podcast-episode",
+        //     author: podcastData.author,
+        //     contentType: "podcast",
+        //     isActive: true,
+        //   });
+        // });
+      }
+    } catch (error) {
+      console.error(`Failed to scrape podcast feed ${feedUrl}:`, error.message);
+      // Continue with next feed on error
+    }
+  }
+
+  return resources;
 }
